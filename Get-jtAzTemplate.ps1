@@ -3,8 +3,10 @@ function Get-jtAzTemplate {
     param (
         [Parameter(Position=0,Mandatory=$true)]
         [string]$providernamespace,
+        
         [Parameter(Position=1,Mandatory=$true)]
         [string]$resourcetype,
+
         [Parameter(Position=2,Mandatory=$false)]
         [ValidateSet("ARM","Bicep","Both")]
         [string]$dsl
@@ -20,9 +22,9 @@ $response = Invoke-RestMethod -Uri "https://docs.microsoft.com/azure/templates/$
 
 $match = ([regex]'(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)
 switch ($dsl) {
-    "ARM" { $match[0].Value.Replace('&quot;','"'); }
-    "Bicep" { $match[1].Value; }
-    "Both" { $match[0].Value.Replace('&quot;','"'); $match[1].Value }
+    "ARM"   { $match[0].Value.Replace('&quot;','"');                 }
+    "Bicep" { $match[1].Value;                                       }
+    "Both"  { $match[0].Value.Replace('&quot;','"'); $match[1].Value }
     Default { $match[0].Value.Replace('&quot;','"'); $match[1].Value }
 }
 
