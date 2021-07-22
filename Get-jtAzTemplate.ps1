@@ -1,20 +1,52 @@
 function Get-jtAzTemplate {
+
+<#
+.SYNOPSIS
+    Returns a template that you can use for reference when deploying resources to Azure.
+
+.DESCRIPTION
+    Get-jtAzTemplate is a function that returns the template for the given resource found at https://docs.microsoft.com/en-us/azure/templates/.
+    You can return the json-, the bicep template or both.
+
+.PARAMETER ProviderNamespace
+    The the provider namespace
+
+.PARAMETER ResourceType
+    The resource type
+
+.EXAMPLE
+     Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases'
+
+.EXAMPLE
+     Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases' -dsl Bicep
+
+.INPUTS
+    String
+
+.OUTPUTS
+    # todo: PSCustomObject
+
+.NOTES
+    Author:  Jeroen Trimbach
+    Website: https://jeroentrimbach.com
+#>
+
     [CmdletBinding()]
     param (
         [Parameter(Position=0,Mandatory=$true)]
-        [string]$providernamespace,
+        [string]$ProviderNamespace,
         
         [Parameter(Position=1,Mandatory=$true)]
-        [string]$resourcetype,
+        [string]$ResourceType,
 
         [Parameter(Position=2,Mandatory=$false)]
         [ValidateSet("ARM","Bicep","Both")]
         [string]$dsl
     )
 # https://docs.microsoft.com/azure/templates/{provider-namespace}/{resource-type}
-# $providernamespace = 'microsoft.sql'
-# $resourcetype = 'servers/databases'
-$response = Invoke-RestMethod -Uri "https://docs.microsoft.com/azure/templates/$providernamespace/$resourcetype"
+# $ProviderNamespace = 'microsoft.sql'
+# $ResourceType = 'servers/databases'
+$response = Invoke-RestMethod -Uri "https://docs.microsoft.com/azure/templates/$ProviderNamespace/$ResourceType"
 # $response = Invoke-RestMethod -Uri 'https://docs.microsoft.com/azure/templates/microsoft.sql/servers/databases'
 
 # $dbs.Content | Select-String -Pattern '(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)' | Select-Object -ExpandProperty Matches
@@ -32,4 +64,4 @@ switch ($dsl) {
 
 }
 
-Get-jtAzTemplate -providernamespace 'microsoft.sql' -resourcetype 'servers/databases'
+Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases'
