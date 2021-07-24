@@ -46,24 +46,24 @@ function Get-jtAzTemplate {
         [ValidateSet("ARM","Bicep","Both")]
         [string]$templateStructure
     )
-    BEGIN {}
+    BEGIN {
+        Write-Verbose "Starting: $($MyInvocation.MyCommand)"
+    } #begin
     PROCESS {
         $baseUrl = 'https://docs.microsoft.com/azure/templates/'
         foreach ($version in $apiVersion) {
-            if ($version -eq 'Latest') {
+            if ($apiVersion -eq 'Latest') {
                 $Uri = $baseUrl + $providerNamespace + '/' + $resourceType
+                Write-Verbose "apiVersion: $version. Resource URL: $Uri"
             } else {
                 $Uri = $baseUrl + $providerNamespace + '/' + $version + '/' + $resourceType
-            }
+                Write-Verbose "apiVersion: $version. Resource URL: $Uri"
+            } #todo: child resource?
+
             $response = Invoke-RestMethod -Uri $Uri
-            
-            # $match =  ([regex]'(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)
-            # $amatch = ([regex]'(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)
-            # $bmatch = ([regex]'(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)
+            #todo: error handling ^
 
-            # $ARM = $match[0].Value.Replace('&quot;','"')
-            # $Bicep = $match[1].Value
-
+            Write-Verbose "Part where we look for $templateStructure"
             switch ($templateStructure) {
                 "ARM"   {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"')      }
                 "Bicep" {   $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
@@ -74,51 +74,34 @@ function Get-jtAzTemplate {
             }
             # Write-Host "$ARM"
 
+            Write-Verbose "Part where we create the output object"
             $props = [ordered]@{'providerNamespace'  = $providerNamespace
                                 'resourceType'       = $resourceType
                                 'apiVersion'         = $apiVersion
                        
-                                'Template Reference' = $baseUrl
+                                'Template Reference' = $Uri
 
                                 'ARM'                = $ARM
                                 'Bicep'              = $Bicep}
             $obj = New-Object -TypeName psobject -Property $props
             Write-Output $obj
         } # foreach
-    }
-    END {}
+    } #process
+    END {
+        Write-Verbose "Ending: $($MyInvocation.MyCommand)"
+    } #end
+} # function
 
 
-
-
-
-    # https://docs.microsoft.com/azure/templates/{provider-namespace}/{resource-type}
-    # $providerNamespace = 'microsoft.sql'
-    # $resourceType = 'servers/databases'
-
-
-# $baseUrl = 'https://docs.microsoft.com/azure/templates/'
-# $Uri = $baseUrl + $providerNamespace + '/' + $resourceType
-# $response = Invoke-RestMethod -Uri $Uri
-# # $response = Invoke-RestMethod -Uri 'https://docs.microsoft.com/azure/templates/microsoft.sql/servers/databases'
-# # $response
-# # $dbs.Content | Select-String -Pattern '(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)' | Select-Object -ExpandProperty Matches
-
-
-# $match = ([regex]'(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)
-# switch ($templateStructure) {
-#     "ARM"   { $match[0].Value.Replace('&quot;','"');                 }
-#     "Bicep" { $match[1].Value;                                       }
-#     "Both"  { $match[0].Value.Replace('&quot;','"'); $match[1].Value }
-#     Default { $match[0].Value.Replace('&quot;','"'); $match[1].Value }
-# }
-
-# https://docs.microsoft.com/en-us/azure/templates/toc.json
-
-}
-
-
- Get-jtAzTemplate -providerNamespace microsoft.sql -resourceType servers/databases -templateStructure Bicep
+ Get-jtAzTemplate -providerNamespace microsoft.sql -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview' -Verbose
 #Get-jtAzTemplate microsoft.resources allversions Bicep
 
 # Get-jtAzTemplate -providerNamespace 'microsoft.sql' -resourceType 'servers/databases'
+
+<#
+https://docs.microsoft.com/azure/templates/{provider-namespace}/{resource-type}
+$providerNamespace = 'microsoft.sql'
+$resourceType = 'servers/databases'
+
+https://docs.microsoft.com/en-us/azure/templates/toc.json
+#>
