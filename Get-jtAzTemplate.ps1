@@ -34,12 +34,12 @@ function Get-jtAzTemplate {
     [CmdletBinding()]
     param (
         [Parameter(Position=0,Mandatory=$false)]
-        [string]$providerNamespace, # = 'microsoft.resources'
+        [string]$providerNamespace,
         
         [Parameter(Position=1,Mandatory=$false)]
         [string]$resourceType, # = 'deployments'
 
-        [Parameter(Position=1,Mandatory=$false)]
+        [Parameter(Position=2,Mandatory=$false)]
         [string[]]$apiVersion = 'Latest',
 
         [Parameter(Position=3,Mandatory=$false)]
@@ -60,23 +60,15 @@ function Get-jtAzTemplate {
                 Write-Verbose "apiVersion: $version. Resource URL: $Uri"
             } #todo: child resource?
 
-            try {
-                $response = Invoke-RestMethod -Uri $Uri -erroraction Stop
-            }
-            catch {
-                catch [System.NullReferenceException]{
-                Write-Host "There is no data" 
-            }
-
-            #todo: error handling ^
+            $response = Invoke-RestMethod -Uri $Uri
 
             Write-Verbose "Part where we look for $templateStructure"
-            switch ($templateStructure) {
+            switch ($templateStructure){
                 "ARM"   {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"')      }
                 "Bicep" {   $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
                 "Both"  {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); `
                             $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
-                Default {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); `
+                Default {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); 
                             $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
             }
             # Write-Host "$ARM"
@@ -100,7 +92,7 @@ function Get-jtAzTemplate {
 } # function
 
 
- Get-jtAzTemplate -providerNamespace microsoft.sql -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview' -Verbose
+ Get-jtAzTemplate -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview' -Verbose
 #Get-jtAzTemplate microsoft.resources allversions Bicep
 
 # Get-jtAzTemplate -providerNamespace 'microsoft.sql' -resourceType 'servers/databases'
