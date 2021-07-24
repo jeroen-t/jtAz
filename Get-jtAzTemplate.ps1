@@ -18,7 +18,7 @@ function Get-jtAzTemplate {
      Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases'
 
 .EXAMPLE
-     Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases' -dsl Bicep
+     Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases' -TemplateStructure Bicep
 
 .INPUTS
     String
@@ -33,27 +33,31 @@ function Get-jtAzTemplate {
 
     [CmdletBinding()]
     param (
-        [Parameter(Position=0,Mandatory=$true)]
-        [string]$ProviderNamespace,
+        [Parameter(Position=0,Mandatory=$false)]
+        [string]$ProviderNamespace = 'microsoft.resources',
         
-        [Parameter(Position=1,Mandatory=$true)]
-        [string]$ResourceType,
+        [Parameter(Position=1,Mandatory=$false)]
+        [string]$ResourceType = 'deployments',
 
         [Parameter(Position=2,Mandatory=$false)]
         [ValidateSet("ARM","Bicep","Both")]
-        [string]$dsl
+        [string]$TemplateStructure
     )
-# https://docs.microsoft.com/azure/templates/{provider-namespace}/{resource-type}
-# $ProviderNamespace = 'microsoft.sql'
-# $ResourceType = 'servers/databases'
-$response = Invoke-RestMethod -Uri "https://docs.microsoft.com/azure/templates/$ProviderNamespace/$ResourceType"
-# $response = Invoke-RestMethod -Uri 'https://docs.microsoft.com/azure/templates/microsoft.sql/servers/databases'
+    # https://docs.microsoft.com/azure/templates/{provider-namespace}/{resource-type}
+    # $ProviderNamespace = 'microsoft.sql'
+    # $ResourceType = 'servers/databases'
 
+
+$baseUrl = 'https://docs.microsoft.com/azure/templates/'
+$Uri = $baseUrl + $ProviderNamespace + '/' + $ResourceType
+$response = Invoke-RestMethod -Uri $Uri
+# $response = Invoke-RestMethod -Uri 'https://docs.microsoft.com/azure/templates/microsoft.sql/servers/databases'
+# $response
 # $dbs.Content | Select-String -Pattern '(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)' | Select-Object -ExpandProperty Matches
 
 
 $match = ([regex]'(?<=lang-bicep">|lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)
-switch ($dsl) {
+switch ($TemplateStructure) {
     "ARM"   { $match[0].Value.Replace('&quot;','"');                 }
     "Bicep" { $match[1].Value;                                       }
     "Both"  { $match[0].Value.Replace('&quot;','"'); $match[1].Value }
@@ -64,4 +68,6 @@ switch ($dsl) {
 
 }
 
-Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases'
+
+Get-jtAzTemplate
+# Get-jtAzTemplate -ProviderNamespace 'microsoft.sql' -ResourceType 'servers/databases'
