@@ -25,4 +25,4 @@ function Get-jtAzResourceTypes {
     }
 }
 
-Get-jtAzResourceTypes -providerNamespace microsoft.sql # | Out-File C:\Temp\letsregex.html
+# Get-jtAzResourceTypes -providerNamespace microsoft.sql # | Out-File C:\Temp\letsregex.html
