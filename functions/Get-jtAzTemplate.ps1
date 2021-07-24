@@ -1,5 +1,4 @@
 function Get-jtAzTemplate {
-
 <#
 .SYNOPSIS
     Returns a template that you can use for reference when deploying resources to Azure.
@@ -63,6 +62,7 @@ function Get-jtAzTemplate {
             $response = Invoke-RestMethod -Uri $Uri
             #todo: error handling ^
 
+
             Write-Verbose "Part where we look for $templateStructure"
             switch ($templateStructure) {
                 "ARM"   {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"')      }
@@ -93,9 +93,8 @@ function Get-jtAzTemplate {
 } # function
 
 
- Get-jtAzTemplate -providerNamespace microsoft.sql -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview' -Verbose
-#Get-jtAzTemplate microsoft.resources allversions Bicep
 
+# Get-jtAzTemplate -providerNamespace microsoft.sql -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview'
 # Get-jtAzTemplate -providerNamespace 'microsoft.sql' -resourceType 'servers/databases'
 
 <#
