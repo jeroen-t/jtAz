@@ -60,7 +60,14 @@ function Get-jtAzTemplate {
                 Write-Verbose "apiVersion: $version. Resource URL: $Uri"
             } #todo: child resource?
 
-            $response = Invoke-RestMethod -Uri $Uri
+            try {
+                $response = Invoke-RestMethod -Uri $Uri -erroraction Stop
+            }
+            catch {
+                catch [System.NullReferenceException]{
+                Write-Host "There is no data" 
+            }
+
             #todo: error handling ^
 
             Write-Verbose "Part where we look for $templateStructure"
