@@ -1,5 +1,4 @@
 function Get-jtAzTemplate {
-
 <#
 .SYNOPSIS
     Returns a template that you can use for reference when deploying resources to Azure.
@@ -34,12 +33,12 @@ function Get-jtAzTemplate {
     [CmdletBinding()]
     param (
         [Parameter(Position=0,Mandatory=$false)]
-        [string]$providerNamespace,
+        [string]$providerNamespace, # = 'microsoft.resources'
         
         [Parameter(Position=1,Mandatory=$false)]
         [string]$resourceType, # = 'deployments'
 
-        [Parameter(Position=2,Mandatory=$false)]
+        [Parameter(Position=1,Mandatory=$false)]
         [string[]]$apiVersion = 'Latest',
 
         [Parameter(Position=3,Mandatory=$false)]
@@ -61,14 +60,16 @@ function Get-jtAzTemplate {
             } #todo: child resource?
 
             $response = Invoke-RestMethod -Uri $Uri
+            #todo: error handling ^
+
 
             Write-Verbose "Part where we look for $templateStructure"
-            switch ($templateStructure){
+            switch ($templateStructure) {
                 "ARM"   {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"')      }
                 "Bicep" {   $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
                 "Both"  {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); `
                             $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
-                Default {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); 
+                Default {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); `
                             $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
             }
             # Write-Host "$ARM"
@@ -92,9 +93,8 @@ function Get-jtAzTemplate {
 } # function
 
 
- Get-jtAzTemplate -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview' -Verbose
-#Get-jtAzTemplate microsoft.resources allversions Bicep
 
+# Get-jtAzTemplate -providerNamespace microsoft.sql -resourceType servers/databases -templateStructure Bicep -apiVersion '2020-08-01-preview'
 # Get-jtAzTemplate -providerNamespace 'microsoft.sql' -resourceType 'servers/databases'
 
 <#
