@@ -1,5 +1,5 @@
 $buildVersion = $env:BUILDVER
-$moduleName = 'somestuff'
+$moduleName = 'jtAz'
 $manifestPath = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath "$moduleName.psd1"
 
 ## Update build version in manifest
