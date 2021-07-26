@@ -1,8 +1,10 @@
-Install-Module -Name PSScriptAnalyzer -Force
+if (!(Get-Module -Name PSScriptAnalyzer)) {
+    Install-Module -Name PSScriptAnalyzer -Force
+}
 
 describe 'Module-level tests' {
     it 'the module imports successfully' {
-        { Import-Module ".\jtAz\jtAz.psm1" -ErrorAction Stop } | should -not throw
+        { Import-Module ".\jtAz\jtAz.psm1" -ErrorAction Stop } | should -not -Throw
     }
 
     it 'the module has an associated manifest' {
