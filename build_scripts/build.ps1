@@ -19,7 +19,7 @@ $manifestContent = Get-Content -Path $manifestPath -Raw
 $manifestContent = $manifestContent -replace '<ModuleVersion>', $buildVersion
 
 ## Find all of the public functions
-$publicFuncFolderPath = .'./jtAz/functions'
+$publicFuncFolderPath = './jtAz/functions'
 if ((Test-Path -Path $publicFuncFolderPath) -and ($publicFunctionNames = Get-ChildItem -Path $publicFuncFolderPath -Filter '*.ps1' | Select-Object -ExpandProperty BaseName)) {
     $funcStrings = "'$($publicFunctionNames -join "','")'"
 } else {
