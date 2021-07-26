@@ -12,14 +12,14 @@ if ((Get-PSRepository -Name PSGallery).InstallationPolicy -ne 'Trusted') {
 }
 
 $buildVersion = $env:BUILDVER
-$manifestPath = "../jtAz/jtAz.psd1"
+$manifestPath = "./jtAz/jtAz.psd1"
 
 ## Update build version in manifest
 $manifestContent = Get-Content -Path $manifestPath -Raw
 $manifestContent = $manifestContent -replace '<ModuleVersion>', $buildVersion
 
 ## Find all of the public functions
-$publicFuncFolderPath = .'../jtAz/functions'
+$publicFuncFolderPath = .'./jtAz/functions'
 if ((Test-Path -Path $publicFuncFolderPath) -and ($publicFunctionNames = Get-ChildItem -Path $publicFuncFolderPath -Filter '*.ps1' | Select-Object -ExpandProperty BaseName)) {
     $funcStrings = "'$($publicFunctionNames -join "','")'"
 } else {
