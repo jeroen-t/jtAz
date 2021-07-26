@@ -2,7 +2,7 @@ Set-StrictMode -Version Latest
 
 # Get public and private function definition files.
 
-$functions = Get-ChildItem -Path $PSScriptRoot\functions\*.ps1 -ErrorAction SilentlyContinue
+$functions = Get-ChildItem -Path $PSScriptRoot\jtAz\functions\*.ps1 -ErrorAction SilentlyContinue
 
 # Dot source the files.
 foreach ($import in $functions) {
