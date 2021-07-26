@@ -11,3 +11,6 @@ Create a PowerShell function that can scrape an ARM and/or Bicep template from h
 - PowerShell toolmaking
 - Web Scraping with PowerShell
 - Git
+
+
+https://docs.github.com/en/actions/guides/building-and-testing-powershell
