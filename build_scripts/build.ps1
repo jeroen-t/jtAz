@@ -12,7 +12,7 @@ if ((Get-PSRepository -Name PSGallery).InstallationPolicy -ne 'Trusted') {
 }
 
 $buildVersion = $env:BUILDVER
-$manifestPath = "../jtAz/JtAz.psd1"
+$manifestPath = "../jtAz/jtAz.psd1"
 
 ## Update build version in manifest
 $manifestContent = Get-Content -Path $manifestPath -Raw
