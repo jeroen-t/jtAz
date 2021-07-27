@@ -43,11 +43,7 @@ jobs:
       # API key generated in PSGallery
         env:
           NUGET_KEY: ${{ secrets.PSGALLERYAPIKEY }}
-<<<<<<< HEAD
           BUILDVER: '1.0.4'
-=======
-          BUILDVER: '1.0.3'
->>>>>>> 3f2cb10864c86506abdba144559234bb33082f36
         shell: pwsh
         run: |
           ./build_scripts/build.ps1
