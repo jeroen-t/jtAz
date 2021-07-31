@@ -5,7 +5,7 @@
     Author            = 'Jeroen Trimbach'
     CompanyName       = 'n/a'
     Description       = 'The module jtAz contains functions that will return the Azure ARM and/or Bicep templates for specified resources from https://docs.microsoft.com/en-us/azure/templates/'
-    PowerShellVersion = '5.0'
+    PowerShellVersion = '6.0'
     FunctionsToExport = @('<FunctionsToExport>')
     PrivateData = @{
 
