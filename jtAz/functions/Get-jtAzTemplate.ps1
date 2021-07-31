@@ -82,7 +82,6 @@ function Get-jtAzTemplate {
                         Default {   $ARM    = ([regex]'(?<=lang-json">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value.Replace('&quot;','"'); `
                                     $Bicep  = ([regex]'(?<=lang-bicep">)[\S\s]*?(?=<\/code><\/pre>)').Matches($response)[0].Value                           }
                     }
-                    # Write-Host "$ARM"
 
                     Write-Verbose "Part where we create the output object"
                     $props = [ordered]@{'providerNamespace'  = $providerNamespace
@@ -97,6 +96,12 @@ function Get-jtAzTemplate {
                     Write-Output $obj
                 } catch {
                     Write-Warning "FAILED to retrieve from URL: $Uri"
+                    if ($check = Get-jtAzProviderNamespace -Name $providerNamespace) {
+                        Write-Verbose "$providerNamespace is a valid provider namespace. Possible resource types are:"
+                        $check | Get-jtAzResourceTypes
+                    } else {
+                        Write-Warning "The provider namespace '$providerNamespace' does not exist. Please run 'Get-jtAzProviderNamespace'."
+                    }
                 } #catch
             } #foreach
         } #else
